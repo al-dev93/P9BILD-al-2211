@@ -12,7 +12,7 @@ module.exports = async (req, res, next) => {
       next();
       return null;
     } catch (err) {
-      res.status(401).send({message: 'user not allowed! you should clear your localstorage and retry!'});
+      res.status(401).send({ message: 'user not allowed! you should clear your localstorage and retry!' });
       return null;
     }
   }

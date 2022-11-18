@@ -29,7 +29,7 @@ describe('Given I am connected as an Admin', () => {
     })
   })
   describe('When I am on Dashboard page, there are bills, and there is two refused', () => {
-    test('Then, filteredBills by accepted status should return 2 bills', () => {
+    test('Then, filteredBills by refused status should return 2 bills', () => {
       const filtered_bills = filteredBills(bills, "refused")
       expect(filtered_bills.length).toBe(2)
     })
@@ -117,7 +117,7 @@ describe('Given I am connected as an Admin', () => {
       userEvent.click(iconEdit)
       expect(screen.getByTestId(`dashboard-form`)).toBeTruthy()
     })
-  })
+  });
 
   describe('When I am on Dashboard page and I click 2 times on edit icon of a card', () => {
     test('Then, big bill Icon should Appear',  () => {
@@ -185,7 +185,8 @@ describe('Given I am connected as Admin, and I am on Dashboard page, and I click
       const bigBilledIcon = screen.queryByTestId("big-billed-icon")
       expect(bigBilledIcon).toBeTruthy()
     })
-  })
+  });
+
   describe('When I click on refuse button', () => {
     test('I should be sent on Dashboard with big billed icon instead of form', () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -210,7 +211,7 @@ describe('Given I am connected as Admin, and I am on Dashboard page, and I click
       expect(bigBilledIcon).toBeTruthy()
     })
   })
-})
+});
 
 describe('Given I am connected as Admin and I am on Dashboard page and I clicked on a bill', () => {
   describe('When I click on the icon eye', () => {
@@ -264,18 +265,22 @@ describe("Given I am a user connected as Admin", () => {
           window,
           'localStorage',
           { value: localStorageMock }
-      )
+      );
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Admin',
         email: "a@a"
-      }))
+      }));
       const root = document.createElement("div")
       root.setAttribute("id", "root")
       document.body.appendChild(root)
       router()
-    })
-    test("fetches bills from an API and fails with 404 message error", async () => {
+    });
 
+    afterEach(() => {
+      jest.restoreAllMocks();
+    })
+
+    test("fetches bills from an API and fails with 404 message error", async () => {
       mockStore.bills.mockImplementationOnce(() => {
         return {
           list : () =>  {
@@ -289,7 +294,6 @@ describe("Given I am a user connected as Admin", () => {
     })
 
     test("fetches messages from an API and fails with 500 message error", async () => {
-
       mockStore.bills.mockImplementationOnce(() => {
         return {
           list : () =>  {
