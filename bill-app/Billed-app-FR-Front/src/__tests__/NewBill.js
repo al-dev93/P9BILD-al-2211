@@ -183,7 +183,6 @@ describe("Given I am a user connected as employee", () => {
   });
 
   describe("When I navigate to NewBill page", () => {
-
     test('Then the bill should not be POST on API if the proof file is not an image', async () => {
       const file = new File(['test'], 'test.pdf', {type: 'application/pdf'});
       userEvent.upload(fileInput, file, {applyAccept: false});
@@ -202,15 +201,24 @@ describe("Given I am a user connected as employee", () => {
   });
 
   describe("When an error occurs on API", () => {
-    let consoleSpy, file;
+    let file;
 
     beforeEach(() => {
-      consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-
+      console.error = jest.fn();
       file = new File(['test'], 'https://localhost:3456/images/test.jpg', {type: 'image/jpeg'});
     });
+
+    test('POST bills on API and fails with 400 message error', async () => {
+      mockedStore.bills.mockImplementationOnce(() => {
+        return {
+          create: jest.fn().mockRejectedValue(new Error("Erreur 400"))
+        }
+      });
+      userEvent.upload(fileInput, file);
+      await new Promise(process.nextTick);
+      
+      expect(`${console.error.mock.calls[0][0]}`).toContain('Erreur 400');
+    })
 
     test('POST bills on API and fails with 500 message error', async () => {
       mockedStore.bills.mockImplementationOnce(() => {
@@ -221,8 +229,7 @@ describe("Given I am a user connected as employee", () => {
       userEvent.upload(fileInput, file);
       await new Promise(process.nextTick);
       
-      expect(consoleSpy).toHaveBeenCalled();
-      expect(consoleSpy.mock.calls[0]);
+      expect(`${console.error.mock.calls[0][0]}`).toContain('Erreur 500');
     })
   })
 })
